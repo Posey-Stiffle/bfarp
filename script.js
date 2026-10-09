@@ -359,8 +359,15 @@ function createDiv(height, width) {
     media.currentTime = 0;
   }
 
+  function stopEmbeddedMedia(box) {
+    const iframe = box?.querySelector(".media-holder iframe");
+
+    if (iframe) iframe.src = "about:blank";
+  }
+
   function closeLightbox(box) {
     stopVideo(box.querySelector(".media-holder video"));
+    stopEmbeddedMedia(box);
     box.classList.remove("open");
   }
 
@@ -368,7 +375,7 @@ function createDiv(height, width) {
     galleryIndex = (index + galleryCards.length) % galleryCards.length;
 
     const card = galleryCards[galleryIndex];
-    const media = card.querySelector("img, video");
+    const media = card.querySelector("img, video, iframe");
 
     if (!media) return;
 
@@ -405,20 +412,38 @@ function createDiv(height, width) {
       })();
 
     stopVideo(box.querySelector(".media-holder video"));
+    stopEmbeddedMedia(box);
+
+    const enlargedMedia = media.cloneNode(true);
+
+    if (enlargedMedia.tagName === "IFRAME" && card.dataset.video) {
+      enlargedMedia.src = card.dataset.video;
+    }
 
     box
       .querySelector(".media-holder")
-      .replaceChildren(media.cloneNode(true));
-const description = box.querySelector(".lightbox-description");
+      .replaceChildren(enlargedMedia);
 
-description.textContent = (card.dataset.description || "").trim();description.hidden = !description.textContent;
+    if (card.dataset.p5Project) {
+      enlargedMedia.style.cursor = "pointer";
+      enlargedMedia.addEventListener("click", () => {
+        window.location.href = card.dataset.p5Project;
+      });
+    }
+
+    const description = box.querySelector(".lightbox-description");
+    const cardText = card.querySelector("p")?.textContent.trim() || "";
+
+    description.textContent =
+      card.dataset.description?.trim() || cardText;
+    description.hidden = !description.textContent;
     box.classList.add("open");
   }
 
   document
     .querySelectorAll(".polaroid, .school-polaroid, .portrait-card")
     .forEach((card) => {
-      const media = card.querySelector("img, video");
+      const media = card.querySelector("img, video, iframe");
 
       if (!media) return;
 
@@ -438,91 +463,12 @@ description.textContent = (card.dataset.description || "").trim();description.hi
       });
     });
 
-  document.querySelectorAll("[data-project]").forEach((button) => {
-    button.addEventListener("click", () => {
-      sound("image");
-
-      const viewer =
-        document.querySelector(".project-viewer") ||
-        (() => {
-          const element = document.createElement("div");
-
-          element.className = "lightbox project-viewer";
-          element.innerHTML =
-            '<button class="lightbox-close" type="button" aria-label="Close project">×</button><iframe title="Playable Art 101 project"></iframe>';
-
-          document.body.appendChild(element);
-
-          element.addEventListener("click", (event) => {
-            if (
-              event.target === element ||
-              event.target.closest(".lightbox-close")
-            ) {
-              closeProject(element);
-            }
-          });
-
-          return element;
-        })();
-
-      viewer.querySelector("iframe").src = button.dataset.project;
-      viewer.classList.add("open");
-    });
-  });
-
-  document.querySelectorAll("[data-video]").forEach((card) => {
-    card.addEventListener("click", () => {
-      const viewer =
-        document.querySelector(".project-viewer") ||
-        (() => {
-          const element = document.createElement("div");
-
-          element.className = "lightbox project-viewer";
-          element.innerHTML =
-            '<button class="lightbox-close" type="button" aria-label="Close video">×</button><iframe title="Enlarged Art 175 video" allow="autoplay; fullscreen; picture-in-picture"></iframe>';
-
-          document.body.appendChild(element);
-
-          element.addEventListener("click", (event) => {
-            if (
-              event.target === element ||
-              event.target.closest(".lightbox-close")
-            ) {
-              closeProject(element);
-            }
-          });
-
-          return element;
-        })();
-
-      const source = card.querySelector("iframe");
-
-      if (source) {
-        source.src = "about:blank";
-
-        setTimeout(() => {
-          source.src = card.dataset.video;
-        }, 0);
-      }
-
-      viewer.querySelector("iframe").src = card.dataset.video;
-      viewer.classList.add("open");
-    });
-  });
-
-  function closeProject(viewer) {
-    viewer.querySelector("iframe").src = "about:blank";
-    viewer.classList.remove("open");
-  }
-
   document.addEventListener("keydown", (event) => {
-    const viewer = document.querySelector(".project-viewer.open");
     const lightbox = document.querySelector(
       ".lightbox.open:not(.project-viewer)",
     );
 
     if (event.key === "Escape") {
-      if (viewer) closeProject(viewer);
       if (lightbox) closeLightbox(lightbox);
     } else if (lightbox && event.key === "ArrowLeft") {
       showGalleryItem(galleryIndex - 1);
