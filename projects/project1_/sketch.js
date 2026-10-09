@@ -12,51 +12,69 @@ let grosor = 5.0;
 let contornos = false;
 
 function setup() {
-  createCanvas(900, 600);
-  // Static lines will stay on canvas. Basically every brush other than the Trazo brush
+  const canvas = createCanvas(900, 600);
+  canvas.parent("canvas-holder");
+
   pg = createGraphics(900, 600);
   pg.background(255);
   background(255);
 
-// Variables for the snake brush
-  snBrush = new SnakeBrush(width / 2, height / 2, 20, brushShape);
+  snBrush = new SnakeBrush(
+    width / 2,
+    height / 2,
+    20,
+    brushShape
+  );
 
-  // UI
-  // Brush size slider
-  // the brush size label text
-  createP("Brush Size").position(1030, 250).style('text-shadow', '-3px -3px 5px black, 3px -3px 5px black, -3px 3px 5px black, 3px 3px 5px black');
-  // how big the slider is
-  sizeSlider = createSlider(1, 70, 10);
-  // position of the slider itself, the style is the black shadow
-  sizeSlider.position(1030, 300).style('box-shadow', '-3px -3px 5px black, 3px -3px 5px black, -3px 3px 5px black, 3px 3px 5px black');
+  const controls = select("#controls");
 
-// brush opacity slider
-  createP("Brush Opacity").position(1030, 350).style('text-shadow', '-3px -3px 5px black, 3px -3px 5px black, -3px 3px 5px black, 3px 3px 5px black');
-  opacitySlider = createSlider(0, 255, 255); 
-  opacitySlider.position(1030, 400).style('box-shadow', '-3px -3px 5px black, 3px -3px 5px black, -3px 3px 5px black, 3px 3px 5px black');
+  function addLabel(text) {
+    return createP(text)
+      .parent(controls)
+      .style(
+        "text-shadow",
+        "-3px -3px 5px black, 3px -3px 5px black, -3px 3px 5px black, 3px 3px 5px black"
+      );
+  }
 
-  // brush color picker
-  createP("Brush Color").position(1030, 450).style('text-shadow', '-3px -3px 5px black, 3px -3px 5px black, -3px 3px 5px black, 3px 3px 5px black');
-  colorPicker = createColorPicker('#000000');
-  colorPicker.position(1030, 500).style('box-shadow', '-3px -3px 5px black, 3px -3px 5px black, -3px 3px 5px black, 3px 3px 5px black');
+  function addShadow(element) {
+    element
+      .parent(controls)
+      .style(
+        "box-shadow",
+        "-3px -3px 5px black, 3px -3px 5px black, -3px 3px 5px black, 3px 3px 5px black"
+      );
 
-  // clear canvas color picker
-  createP("Clear Canvas Color").position(1030, 550).style('text-shadow', '-3px -3px 5px black, 3px -3px 5px black, -3px 3px 5px black, 3px 3px 5px black');
-  bgcolor = createColorPicker('#ffffff');
-  bgcolor.position(1030, 600).style('box-shadow', '-3px -3px 5px black, 3px -3px 5px black, -3px 3px 5px black, 3px 3px 5px black');
+    return element;
+  }
 
-// filter color picker
-  createP("Filter Color").position(1030, 650).style('text-shadow', '-3px -3px 5px black, 3px -3px 5px black, -3px 3px 5px black, 3px 3px 5px black');
-  filterPicker = createColorPicker('#ff0000');
-  filterPicker.position(1030, 700).style('box-shadow', '-3px -3px 5px black, 3px -3px 5px black, -3px 3px 5px black, 3px 3px 5px black');
+  addLabel("Brush Size");
+  sizeSlider = addShadow(createSlider(1, 70, 10));
+
+  addLabel("Brush Opacity");
+  opacitySlider = addShadow(createSlider(0, 255, 255));
+
+  addLabel("Brush Color");
+  colorPicker = addShadow(createColorPicker("#000000"));
+
+  addLabel("Clear Canvas Color");
+  bgcolor = addShadow(createColorPicker("#ffffff"));
+
+  addLabel("Filter Color");
+  filterPicker = addShadow(createColorPicker("#ff0000"));
   filterPicker.input(applyFilter);
 
-  symButton = createButton("Symmetry: OFF");
-  symButton.position(1030, 800).style('padding', '10px');
+  symButton = createButton("Symmetry: OFF")
+    .parent(controls)
+    .style("padding", "10px");
+
   symButton.mousePressed(toggleSymmetry);
 
-  clearButton = createButton("Clear Canvas");
-  clearButton.position(1030, 880).style('padding', '20px').style('font-size', '20px');
+  clearButton = createButton("Clear Canvas")
+    .parent(controls)
+    .style("padding", "20px")
+    .style("font-size", "20px");
+
   clearButton.mousePressed(clearCanvas);
 }
 
