@@ -415,14 +415,27 @@ function createDiv(height, width) {
     stopEmbeddedMedia(box);
 
     const enlargedMedia = media.cloneNode(true);
+    const extraImages = (card.dataset.extraImages || "")
+      .split(",")
+      .map((source) => source.trim())
+      .filter(Boolean);
 
     if (enlargedMedia.tagName === "IFRAME" && card.dataset.video) {
       enlargedMedia.src = card.dataset.video;
     }
 
-    box
-      .querySelector(".media-holder")
-      .replaceChildren(enlargedMedia);
+    const holder = box.querySelector(".media-holder");
+    holder.replaceChildren(enlargedMedia);
+    holder.classList.toggle("has-extra-images", extraImages.length > 0);
+    holder.classList.toggle("fit-primary", card.dataset.closeupFit === "small");
+    holder.classList.toggle("large-primary", card.dataset.closeupFit === "large");
+
+    extraImages.forEach((source) => {
+      const image = document.createElement("img");
+      image.src = source;
+      image.alt = "Behind the scenes image";
+      holder.appendChild(image);
+    });
 
     if (card.dataset.p5Project) {
       enlargedMedia.style.cursor = "pointer";
@@ -434,8 +447,9 @@ function createDiv(height, width) {
     const description = box.querySelector(".lightbox-description");
     const cardText = card.querySelector("p")?.textContent.trim() || "";
 
-    description.textContent =
-      card.dataset.description?.trim() || cardText;
+    description.textContent = card.hasAttribute("data-description")
+      ? card.dataset.description.trim()
+      : cardText;
     description.hidden = !description.textContent;
     box.classList.add("open");
   }
