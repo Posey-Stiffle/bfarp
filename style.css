@@ -228,11 +228,11 @@ body.inner-page{
 }
 .hotspot-personal{
     left:25%;
-    bottom:75%
+    bottom:65%
 }
 .hotspot-p5js{
-    left:7%;
-    bottom:53%
+    left:1%;
+    bottom:47%
 }
  .room-hint{
     text-align:center;
@@ -1304,6 +1304,54 @@ body.page-personal .polaroid-image{
   height: min(68vh, 620px);
   border: 7px solid #fff;
   background: #fff;
+}
+
+.lightbox .media-holder.has-extra-images {
+  width: min(94vw, 1100px);
+  max-height: 68vh;
+  overflow-y: auto;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 24px;
+  padding: 18px;
+  border: 0;
+  background: #0b011847;
+  box-shadow: none;
+  line-height: 0;
+}
+
+.lightbox .media-holder.has-extra-images > img,
+.lightbox .media-holder.has-extra-images > video,
+.lightbox .media-holder.has-extra-images > iframe {
+  border: 7px solid #fff;
+  background: #fff;
+  box-shadow: 0 8px 24px rgba(15, 125, 228, 0.45);
+}
+
+.lightbox .media-holder.has-extra-images img,
+.lightbox .media-holder.has-extra-images video {
+  flex: 0 0 auto;
+  max-width: 100%;
+  max-height: none;
+}
+
+.lightbox .media-holder.has-extra-images iframe {
+  flex: 0 0 auto;
+}
+
+.lightbox .media-holder.has-extra-images.fit-primary > img:first-child {
+  width: auto;
+  max-width: 90%;
+  max-height: 48vh;
+  object-fit: contain;
+}
+
+.lightbox .media-holder.has-extra-images.large-primary > img:first-child {
+  width: min(100%, 800px);
+  max-width: 100%;
+  height: auto;
+  object-fit: contain;
 }
 
 .lightbox-description {
